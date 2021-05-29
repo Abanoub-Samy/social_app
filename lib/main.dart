@@ -1,39 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/screens/login_screen.dart';
+import 'package:social_app/screens/register_screen.dart';
+import 'package:social_app/shared/cache_helper.dart';
+import 'package:social_app/shared/cubit/app_cubit.dart';
+import 'package:social_app/shared/cubit/app_states.dart';
+import 'package:social_app/shared/cubit/bloc_observer.dart';
+import 'package:social_app/shared/styles/themes.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CacheHelper.init();
+  Bloc.observer = MyBlocObserver();
+  bool isDark = false;
+  if(CacheHelper.getData(key: 'isDark') != null){
+    isDark = CacheHelper.getData(key: 'isDark');
+  }
+  runApp(MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (BuildContext ctx) => AppCubit()..changeAppMode(fromShared: isDark),
+        ),
+      ],
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (ctx, state) {},
+        builder: (ctx, state) {
+
+          return MyApp(isDark: isDark,);
+        },
+      )));
 }
 
 class MyApp extends StatelessWidget {
+  final bool? isDark;
+
+  MyApp({ required this.isDark});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(),
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode:
+      AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
+      home: LoginScreen(),
+      routes: {
+        LoginScreen.routeName: (ctx) => LoginScreen(),
+        RegisterScreen.routeName: (ctx) => RegisterScreen(),
+      },
     );
   }
 }
