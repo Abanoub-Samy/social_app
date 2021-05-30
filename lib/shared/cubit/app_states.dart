@@ -8,7 +8,11 @@ class ChangeBottomNavState extends AppStates {}
 
 class LoginLoadingState extends AppStates {}
 
-class LoginSuccessState extends AppStates {}
+class LoginSuccessState extends AppStates {
+  final String uId ;
+
+  LoginSuccessState(this.uId);
+}
 
 class LoginErrorState extends AppStates {
   final String error;
@@ -38,4 +42,14 @@ class RegisterErrorState extends AppStates {
   final String error;
 
   RegisterErrorState(this.error);
+}
+
+class CreateUserLoadingState extends AppStates {}
+
+class CreateUserSuccessState extends AppStates {}
+
+class CreateUserErrorState extends AppStates {
+  final String error;
+
+  CreateUserErrorState(this.error);
 }

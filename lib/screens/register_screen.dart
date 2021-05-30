@@ -1,12 +1,13 @@
 import 'dart:io';
-
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:social_app/screens/home_screen.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
+import 'package:social_app/widgets/flutter_toast.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const routeName = '/signUp-screen';
@@ -44,24 +45,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     var cubit = AppCubit.get(context);
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {
-        // if (state is RegisterSuccessState) {
-        //   cubit.userLogin(email: _emailText.text, password: _passwordText.text);
-        //   CacheHelper.saveData(
-        //     key: 'token',
-        //     value: cubit.loginModel!.data!.token.toString(),
-        //   ).then((value) {
-        //     Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-        //   });
-        //   showToast(
-        //       message: cubit.loginModel!.message.toString(),
-        //       backgroundColor: Colors.green,
-        //       textColor: Colors.white);
-        // } else if (state is LoginErrorState) {
-        //   showToast(
-        //       message: cubit.loginModel!.message.toString(),
-        //       backgroundColor: Colors.red,
-        //       textColor: Colors.white);
-        // }
+        if (state is CreateUserSuccessState) {
+          cubit.userLogin(email: _emailText.text, password: _passwordText.text);
+          if (state is LoginSuccessState) {
+            Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+          }
+          successToast(
+              message: 'تم التسجيل بنجاح');
+        } else if (state is RegisterErrorState) {
+          errorToast(
+              message: state.error.toString());
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -259,7 +253,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Center(child: CircularProgressIndicator()),
                         builder: (context) => ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {}
+                            if (_formKey.currentState!.validate()) {
+                              AppCubit.get(context).userRegister(
+                                name: _nameText.text,
+                                phone: _phoneText.text,
+                                email: _emailText.text,
+                                password: _passwordText.text,
+                              );
+                            }
                           },
                           child: Text('Register'),
                           style: ButtonStyle(),
@@ -279,20 +280,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
-// class CustomCircleAvatar extends StatelessWidget {
-//   CustomCircleAvatar({required this.backgroundImage, required this.radius});
-//
-//   final File backgroundImage;
-//   final double radius;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return CircleAvatar(
-//       radius: 50,
-//       backgroundImage: backgroundImage == null
-//           ? AssetImage('images/placeperson.png')
-//           : FileImage(backgroundImage),
-//     );
-//   }
-// }

@@ -2,9 +2,12 @@
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/screens/home_screen.dart';
 import 'package:social_app/screens/register_screen.dart';
+import 'package:social_app/shared/cache_helper.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
+import 'package:social_app/widgets/flutter_toast.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login-screen';
@@ -23,7 +26,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     var cubit = AppCubit.get(context);
     return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if(state is LoginErrorState){
+          successToast(message: state.error, backgroundColor: Colors.red,);
+        }
+        else if(state is LoginSuccessState){
+          CacheHelper.saveData(key: 'uId', value: state.uId.toString());
+          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
@@ -144,7 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: ConditionalBuilder(
                                 builder: (ctx) => ElevatedButton(
                                   onPressed: () {
-                                    if (formKey.currentState!.validate()) {}
+                                    if (formKey.currentState!.validate()) {
+                                      AppCubit.get(context).userLogin(email: emailText.text, password: passwordText.text);
+                                    }
                                   },
                                   child: Text('login'),
                                   style: ButtonStyle(),
