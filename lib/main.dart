@@ -4,6 +4,7 @@ import 'package:social_app/screens/home_screen.dart';
 import 'package:social_app/screens/login_screen.dart';
 import 'package:social_app/screens/register_screen.dart';
 import 'package:social_app/shared/cache_helper.dart';
+import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
 import 'package:social_app/shared/cubit/bloc_observer.dart';
@@ -16,7 +17,6 @@ void main() async {
   await CacheHelper.init();
   Bloc.observer = MyBlocObserver();
   bool isDark = false;
-  var uId ;
   Widget? widget;
   if(CacheHelper.getData(key: 'isDark') != null){
     isDark = CacheHelper.getData(key: 'isDark');
@@ -30,7 +30,7 @@ void main() async {
   runApp(MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (BuildContext ctx) => AppCubit()..changeAppMode(fromShared: isDark),
+          create: (BuildContext ctx) => AppCubit()..changeAppMode(fromShared: isDark)..getUser(),
         ),
       ],
       child: BlocConsumer<AppCubit, AppStates>(
