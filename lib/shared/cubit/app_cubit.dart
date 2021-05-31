@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/models/user-model.dart';
+import 'package:social_app/new_post/new_post_screen.dart';
 import 'package:social_app/screens/chats/chats_screen.dart';
 import 'package:social_app/screens/feeds/feeds_screen.dart';
 import 'package:social_app/screens/settings/settings_screen.dart';
@@ -25,19 +26,25 @@ class AppCubit extends Cubit<AppStates> {
   List<Widget> screens = [
     FeedsScreen(),
     ChatsScreen(),
+    NewPostScreen(),
     UsersScreen(),
     SettingsScreen(),
   ];
   List<String> titles = [
     'News Feeds',
     'Chats',
+    'New Post',
     'Users',
     'Settings',
   ];
 
   void changeBottom(int index) {
-    currentIndex = index;
-    emit(ChangeBottomNavState());
+    if(index == 2)
+      emit(NewPostsState());
+    else{
+      currentIndex = index;
+      emit(ChangeBottomNavState());
+    }
   }
 
   void changeAppMode({bool? fromShared}) {
@@ -70,6 +77,7 @@ class AppCubit extends Cubit<AppStates> {
     required String phone,
     required String email,
     required String password,
+    required String image,
   }) {
     emit(RegisterLoadingState());
     fireAuth
@@ -84,7 +92,6 @@ class AppCubit extends Cubit<AppStates> {
         phone: phone,
         email: email,
         uId: value.user!.uid,
-        isEmailVerified: false,
       );
       // emit(RegisterSuccessState());
     }).catchError((onError) {
@@ -98,14 +105,16 @@ class AppCubit extends Cubit<AppStates> {
     required String phone,
     required String email,
     required String uId,
-    required bool isEmailVerified,
   }) {
     UserModel userModel = UserModel(
       name: name,
       email: email,
       phone: phone,
       uId: uId,
-      isEmailVerified: isEmailVerified,
+      isEmailVerified: false,
+      bio: 'write your bio ...',
+      profileImage: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY%2Fdownload&imgrefurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY&tbnid=slr4QpyZtjlhuM&vet=12ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ..i&docid=aQF4Yv1HIZDMtM&w=1229&h=1280&q=person%20image&ved=2ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ',
+      profileCover: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY%2Fdownload&imgrefurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY&tbnid=slr4QpyZtjlhuM&vet=12ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ..i&docid=aQF4Yv1HIZDMtM&w=1229&h=1280&q=person%20image&ved=2ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ',
     );
     fireStore.collection('users').doc(uId).set(userModel.toMap()).then((value) {
       emit(CreateUserSuccessState());

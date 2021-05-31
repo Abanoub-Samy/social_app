@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/new_post/new_post_screen.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
 
@@ -80,6 +81,10 @@ class HomeScreen extends StatelessWidget {
                   label: 'Chats',
                 ),
                 BottomNavigationBarItem(
+                  icon: Icon(Icons.upload_rounded),
+                  label: 'New Post',
+                ),
+                BottomNavigationBarItem(
                   icon: Icon(Icons.location_on),
                   label: 'Users',
                 ),
@@ -95,6 +100,10 @@ class HomeScreen extends StatelessWidget {
             ),
           );
         },
-        listener: (ctx, state) {});
+        listener: (ctx, state) {
+          if(state is NewPostsState){
+            Navigator.pushNamed(context, NewPostScreen.routeName);
+          }
+        });
   }
 }

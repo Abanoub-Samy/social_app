@@ -259,6 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 phone: _phoneText.text,
                                 email: _emailText.text,
                                 password: _passwordText.text,
+                                image: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY%2Fdownload&imgrefurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY&tbnid=slr4QpyZtjlhuM&vet=12ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ..i&docid=aQF4Yv1HIZDMtM&w=1229&h=1280&q=person%20image&ved=2ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ'
                               );
                             }
                           },
