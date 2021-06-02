@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_app/screens/edit_profile/edit_profile_screen.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    AppCubit.get(context)..getUser();
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -152,7 +154,9 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 10,),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, EditProfileScreen.routeName);
+                    },
                     child: Icon(Icons.edit,size: 16,),
                   ),
                 ],

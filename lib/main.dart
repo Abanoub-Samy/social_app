@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/new_post/new_post_screen.dart';
+import 'package:social_app/screens/edit_profile/edit_profile_screen.dart';
 import 'package:social_app/screens/home_screen.dart';
 import 'package:social_app/screens/login_screen.dart';
 import 'package:social_app/screens/register_screen.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
         RegisterScreen.routeName: (ctx) => RegisterScreen(),
         HomeScreen.routeName : (ctx) => HomeScreen(),
         NewPostScreen.routeName : (ctx) => NewPostScreen(),
+        EditProfileScreen.routeName : (ctx) => EditProfileScreen(),
       },
     );
   }

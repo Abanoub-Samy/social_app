@@ -64,3 +64,13 @@ class GetUserErrorState extends AppStates {
 
   GetUserErrorState(this.error);
 }
+
+class UpdateUserLoadingState extends AppStates {}
+
+class UpdateUserSuccessState extends AppStates {}
+
+class UpdateUserErrorState extends AppStates {
+  final String error;
+
+  UpdateUserErrorState(this.error);
+}

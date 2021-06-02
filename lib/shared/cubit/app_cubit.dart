@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(InitialState());
@@ -39,9 +41,9 @@ class AppCubit extends Cubit<AppStates> {
   ];
 
   void changeBottom(int index) {
-    if(index == 2)
+    if (index == 2)
       emit(NewPostsState());
-    else{
+    else {
       currentIndex = index;
       emit(ChangeBottomNavState());
     }
@@ -113,8 +115,10 @@ class AppCubit extends Cubit<AppStates> {
       uId: uId,
       isEmailVerified: false,
       bio: 'write your bio ...',
-      profileImage: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY%2Fdownload&imgrefurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY&tbnid=slr4QpyZtjlhuM&vet=12ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ..i&docid=aQF4Yv1HIZDMtM&w=1229&h=1280&q=person%20image&ved=2ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ',
-      profileCover: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY%2Fdownload&imgrefurl=https%3A%2F%2Fwww.fay3.com%2FiFtqUNEqfoY&tbnid=slr4QpyZtjlhuM&vet=12ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ..i&docid=aQF4Yv1HIZDMtM&w=1229&h=1280&q=person%20image&ved=2ahUKEwiao9vv8fPwAhVOaBoKHUIPAcUQMygMegUIARDUAQ',
+      profileImage:
+          'hWX_4UKHendA94QMygFegUIARDCAQ..i&docid=4KNx8nObko9xRM&w=1200&h=1200&q=images%20oerson&ved=2ahUKEwjyvYDCy_',
+      profileCover:
+          'hWX_4UKHendA94QMygFegUIARDCAQ..i&docid=4KNx8nObko9xRM&w=1200&h=1200&q=images%20oerson&ved=2ahUKEwjyvYDCy_',
     );
     fireStore.collection('users').doc(uId).set(userModel.toMap()).then((value) {
       emit(CreateUserSuccessState());
@@ -133,6 +137,108 @@ class AppCubit extends Cubit<AppStates> {
     }).catchError((onError) {
       print(onError.toString());
       emit(GetUserErrorState(onError.toString()));
+    });
+  }
+
+
+  void uploadProfileImage(File profileImage) {
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('users/${Uri.file(profileImage.path).pathSegments.last}')
+        .putFile(profileImage)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        updateUser(
+          name: userModel!.name!,
+          phone: userModel!.phone!,
+          bio: userModel!.bio!,
+          profileCover: userModel!.profileCover!,
+          profileImage: value,
+        );
+        getUser();
+      }).catchError((onError) {});
+    }).catchError((onError) {
+      print(onError.toString());
+    });
+  }
+
+
+  void uploadCoverImage(File coverImage) {
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('users/${Uri.file(coverImage.path).pathSegments.last}')
+        .putFile(coverImage)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        updateUser(
+          name: userModel!.name!,
+          phone: userModel!.phone!,
+          bio: userModel!.bio!,
+          profileCover: value,
+          profileImage: userModel!.profileImage!,
+        );
+        getUser();
+      }).catchError((onError) {});
+    }).catchError((onError) {
+      print(onError.toString());
+    });
+  }
+
+  // void updateUserIf({
+  //   required String name,
+  //   required String phone,
+  //   required String bio,
+  //   File? profileImage,
+  //   File? profileCover,
+  // }) {
+  //    if (profileImage != null) {
+  //     uploadCoverImage(profileImage);
+  //     updateUser(
+  //       name: name,
+  //       phone: phone,
+  //       bio: bio,
+  //       profileImage: profileImageUrl,
+  //     );
+  //   } else if (profileCover != null) {
+  //     uploadCoverImage(profileCover);
+  //
+  //   } else {
+  //     updateUser(
+  //       name: name,
+  //       phone: phone,
+  //       bio: bio,
+  //     );
+  //   }
+  // }
+
+  void updateUser({
+    required String name,
+    required String phone,
+    required String bio,
+    String? profileImage,
+    String? profileCover,
+  }) {
+    emit(UpdateUserLoadingState());
+    UserModel model = UserModel(
+      name: name,
+      email: userModel!.email,
+      phone: phone,
+      uId: userModel!.uId,
+      isEmailVerified: false,
+      bio: bio,
+      profileImage: profileImage,
+      profileCover: profileCover,
+      );
+    fireStore
+        .collection('users')
+        .doc(userModel!.uId)
+        .update(model.toMap())
+        .then((value) {
+      getUser();
+      emit(UpdateUserSuccessState());
+    }).catchError((onError) {
+      print(onError.toString());
+      emit(UpdateUserErrorState(onError.toString()));
     });
   }
 }
