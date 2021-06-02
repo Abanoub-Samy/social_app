@@ -20,35 +20,41 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   bool isDark = false;
   Widget? widget;
-  if(CacheHelper.getData(key: 'isDark') != null){
+  if (CacheHelper.getData(key: 'isDark') != null) {
     isDark = CacheHelper.getData(key: 'isDark');
   }
-  if(CacheHelper.getData(key: 'uId') != null){
+  if (CacheHelper.getData(key: 'uId') != null) {
     uId = CacheHelper.getData(key: 'uId');
     widget = HomeScreen();
-  }else {
+  } else {
     widget = LoginScreen();
   }
   runApp(MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (BuildContext ctx) => AppCubit()..changeAppMode(fromShared: isDark)..getUser(),
+          create: (BuildContext ctx) => AppCubit()
+            ..changeAppMode(fromShared: isDark)
+            ..getUser()
+            ..getPosts(),
         ),
       ],
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (ctx, state) {},
         builder: (ctx, state) {
-
-          return MyApp(isDark: isDark,widget: widget,);
+          return MyApp(
+            isDark: isDark,
+            widget: widget,
+          );
         },
       )));
 }
 
 class MyApp extends StatelessWidget {
   final bool? isDark;
-  final Widget? widget ;
+  final Widget? widget;
 
-  MyApp({ required this.isDark,required this.widget});
+  MyApp({required this.isDark, required this.widget});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,14 +62,14 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode:
-      AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
+          AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
       home: widget,
       routes: {
         LoginScreen.routeName: (ctx) => LoginScreen(),
         RegisterScreen.routeName: (ctx) => RegisterScreen(),
-        HomeScreen.routeName : (ctx) => HomeScreen(),
-        NewPostScreen.routeName : (ctx) => NewPostScreen(),
-        EditProfileScreen.routeName : (ctx) => EditProfileScreen(),
+        HomeScreen.routeName: (ctx) => HomeScreen(),
+        NewPostScreen.routeName: (ctx) => NewPostScreen(),
+        EditProfileScreen.routeName: (ctx) => EditProfileScreen(),
       },
     );
   }

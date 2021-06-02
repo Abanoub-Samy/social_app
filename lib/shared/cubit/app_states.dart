@@ -74,3 +74,24 @@ class UpdateUserErrorState extends AppStates {
 
   UpdateUserErrorState(this.error);
 }
+
+class CreatePostLoadingState extends AppStates {}
+
+class CreatePostSuccessState extends AppStates {}
+
+class CreatePostErrorState extends AppStates {
+  final String error;
+
+  CreatePostErrorState(this.error);
+}
+
+
+class GetPostsLoadingState extends AppStates {}
+
+class GetPostsSuccessState extends AppStates {}
+
+class GetPostsErrorState extends AppStates {
+  final String error;
+
+  GetPostsErrorState(this.error);
+}

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/models/post_model.dart';
 import 'package:social_app/models/user-model.dart';
 import 'package:social_app/new_post/new_post_screen.dart';
 import 'package:social_app/screens/chats/chats_screen.dart';
@@ -140,7 +141,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-
   void uploadProfileImage(File profileImage) {
     firebase_storage.FirebaseStorage.instance
         .ref()
@@ -161,7 +161,6 @@ class AppCubit extends Cubit<AppStates> {
       print(onError.toString());
     });
   }
-
 
   void uploadCoverImage(File coverImage) {
     firebase_storage.FirebaseStorage.instance
@@ -184,33 +183,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  // void updateUserIf({
-  //   required String name,
-  //   required String phone,
-  //   required String bio,
-  //   File? profileImage,
-  //   File? profileCover,
-  // }) {
-  //    if (profileImage != null) {
-  //     uploadCoverImage(profileImage);
-  //     updateUser(
-  //       name: name,
-  //       phone: phone,
-  //       bio: bio,
-  //       profileImage: profileImageUrl,
-  //     );
-  //   } else if (profileCover != null) {
-  //     uploadCoverImage(profileCover);
-  //
-  //   } else {
-  //     updateUser(
-  //       name: name,
-  //       phone: phone,
-  //       bio: bio,
-  //     );
-  //   }
-  // }
-
   void updateUser({
     required String name,
     required String phone,
@@ -228,7 +200,7 @@ class AppCubit extends Cubit<AppStates> {
       bio: bio,
       profileImage: profileImage,
       profileCover: profileCover,
-      );
+    );
     fireStore
         .collection('users')
         .doc(userModel!.uId)
@@ -239,6 +211,81 @@ class AppCubit extends Cubit<AppStates> {
     }).catchError((onError) {
       print(onError.toString());
       emit(UpdateUserErrorState(onError.toString()));
+    });
+  }
+
+  // File postImages;
+  // void uploadPostImages() {
+  //   firebase_storage.FirebaseStorage.instance
+  //       .ref()
+  //       .child('posts/${Uri.file(coverImage.path).pathSegments.last}')
+  //       .putFile(coverImage)
+  //       .then((value) {
+  //     value.ref.getDownloadURL().then((value) {
+  //       updateUser(
+  //         name: userModel!.name!,
+  //         phone: userModel!.phone!,
+  //         bio: userModel!.bio!,
+  //         profileCover: value,
+  //         profileImage: userModel!.profileImage!,
+  //       );
+  //       getUser();
+  //     }).catchError((onError) {});
+  //   }).catchError((onError) {
+  //     print(onError.toString());
+  //   });
+  // }
+
+  void uploadImagePost({
+    String? text,
+    File? postImage,
+  }) {
+    emit(CreatePostLoadingState());
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('posts/${Uri.file(postImage!.path).pathSegments.last}')
+        .putFile(postImage)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        createPost(text: text,postImage: value);
+        emit(CreatePostSuccessState());
+      }).catchError((onError) {});
+    }).catchError((onError) {
+      print(onError.toString());
+      emit(CreatePostErrorState(onError.toString()));
+    });
+  }
+
+  void createPost({
+    String? text,
+    String? postImage,
+  }){
+    PostModel model = PostModel(
+      name: userModel!.name,
+      uId: uId,
+      date: DateTime.now().toString(),
+      profileImage: userModel!.profileImage,
+      text: text,
+      postImage: postImage,
+    );
+    fireStore
+        .collection('posts')
+        .add(model.toMap())
+        .then((value) {})
+        .catchError((onError) {});
+
+  }
+
+  List<PostModel> postModel= [] ;
+  void getPosts(){
+    emit(GetPostsLoadingState());
+    fireStore.collection('posts').get().then((value){
+      value.docs.forEach((element) {
+        postModel.add(PostModel.fromJson(element.data()));
+      });
+      emit(GetPostsSuccessState());
+    }).catchError((onError){
+      emit(GetPostsErrorState(onError.toString()));
     });
   }
 }
