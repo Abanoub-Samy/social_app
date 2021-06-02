@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:social_app/models/post_model.dart';
 
-Widget buildPostItem(BuildContext context) =>
-    Card(
+Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       elevation: 4,
       margin: EdgeInsets.symmetric(
@@ -10,13 +10,14 @@ Widget buildPostItem(BuildContext context) =>
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 CircleAvatar(
                   radius: 25,
-                  backgroundImage: NetworkImage(
-                      'https://image.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg'),
+                  backgroundImage:
+                      NetworkImage(postModel.profileImage.toString()),
                 ),
                 SizedBox(
                   width: 15,
@@ -28,7 +29,7 @@ Widget buildPostItem(BuildContext context) =>
                       Row(
                         children: [
                           Text(
-                            'name',
+                            postModel.name.toString(),
                             style: TextStyle(
                               height: 1.2,
                             ),
@@ -43,14 +44,10 @@ Widget buildPostItem(BuildContext context) =>
                         ],
                       ),
                       Text(
-                        '25-1-2021',
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .caption!
-                            .copyWith(
-                          height: 1.2,
-                        ),
+                        postModel.date.toString(),
+                        style: Theme.of(context).textTheme.caption!.copyWith(
+                              height: 1.2,
+                            ),
                       ),
                     ],
                   ),
@@ -75,14 +72,13 @@ Widget buildPostItem(BuildContext context) =>
                 color: Colors.grey.withOpacity(.3),
               ),
             ),
-            Text(
-              'fffffffffffffffffffffsdfdsffds'
-                  'dfdsfdsfdsfdsfdfsdsfdsfdfdsfsdf'
-                  'sdffffffffffffffffffsdffffffffd',
-              style: TextStyle(
-                height: 1,
+            if (postModel.text != null)
+              Text(
+                postModel.text.toString(),
+                style: TextStyle(
+                  height: 1,
+                ),
               ),
-            ),
             Container(
               width: double.infinity,
               child: Wrap(
@@ -126,19 +122,20 @@ Widget buildPostItem(BuildContext context) =>
                 ],
               ),
             ),
-            Container(
-              height: 140,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://image.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg',
+            if (postModel.postImage != null)
+              Container(
+                height: 140,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      postModel.postImage.toString(),
+                    ),
+                    fit: BoxFit.cover,
                   ),
-                  fit: BoxFit.cover,
                 ),
               ),
-            ),
             Row(
               children: [
                 Expanded(
@@ -157,11 +154,8 @@ Widget buildPostItem(BuildContext context) =>
                             width: 5,
                           ),
                           Text(
-                            '120',
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .caption,
+                            '0',
+                            style: Theme.of(context).textTheme.caption,
                           ),
                         ],
                       ),
@@ -185,11 +179,8 @@ Widget buildPostItem(BuildContext context) =>
                             width: 5,
                           ),
                           Text(
-                            '120 comment',
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .caption,
+                            '0 comment',
+                            style: Theme.of(context).textTheme.caption,
                           ),
                         ],
                       ),
@@ -214,21 +205,17 @@ Widget buildPostItem(BuildContext context) =>
                       children: [
                         CircleAvatar(
                           radius: 18,
-                          backgroundImage: NetworkImage(
-                              'https://image.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg'),
+                          backgroundImage:
+                              NetworkImage(postModel.profileImage.toString()),
                         ),
                         SizedBox(
                           width: 15,
                         ),
                         Text(
-                          'write the comment ....',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .caption!
-                              .copyWith(
-                            height: 1.2,
-                          ),
+                          'write comment ....',
+                          style: Theme.of(context).textTheme.caption!.copyWith(
+                                height: 1.2,
+                              ),
                         ),
                       ],
                     ),
@@ -251,10 +238,7 @@ Widget buildPostItem(BuildContext context) =>
                         ),
                         Text(
                           'Like',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .caption,
+                          style: Theme.of(context).textTheme.caption,
                         ),
                       ],
                     ),
