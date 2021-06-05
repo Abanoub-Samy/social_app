@@ -95,3 +95,23 @@ class GetPostsErrorState extends AppStates {
 
   GetPostsErrorState(this.error);
 }
+
+class PostLikeLoadingState extends AppStates {}
+
+class PostLikeSuccessState extends AppStates {}
+
+class PostLikeErrorState extends AppStates {
+  final String error;
+
+  PostLikeErrorState(this.error);
+}
+
+class PostCommentLoadingState extends AppStates {}
+
+class PostCommentSuccessState extends AppStates {}
+
+class PostCommentErrorState extends AppStates {
+  final String error;
+
+  PostCommentErrorState(this.error);
+}

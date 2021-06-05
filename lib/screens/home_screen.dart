@@ -3,11 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/new_post/new_post_screen.dart';
 import 'package:social_app/shared/cubit/app_cubit.dart';
 import 'package:social_app/shared/cubit/app_states.dart';
-
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:conditional_builder/conditional_builder.dart';
-import 'package:social_app/widgets/flutter_toast.dart';
-
 class HomeScreen extends StatelessWidget {
   static String routeName = '/home-screen';
 
@@ -15,7 +12,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
         builder: (ctx, state) {
-          //AppCubit.get(context).getUser();
           var cubit = AppCubit.get(context);
           return Scaffold(
             appBar: AppBar(
@@ -32,41 +28,10 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             body: ConditionalBuilder(
-              condition: cubit.userModel != null,
-              fallback: (context) => Center(child: CircularProgressIndicator()),
+              condition: AppCubit.get(context).postModel.length > 0,
+              fallback: (context) => Center(child: CircularProgressIndicator(),),
               builder: (context) => Column(
                 children: [
-                  if (!cubit.fireAuth.currentUser!.emailVerified)
-                    Container(
-                      color: Colors.amber.withOpacity(0.6),
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            Icon(Icons.info_outline),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text('please verify your email  '),
-                            SizedBox(
-                              width: 50,
-                            ),
-                            ElevatedButton(
-                                onPressed: () {
-                                  cubit.fireAuth.currentUser!
-                                      .sendEmailVerification()
-                                      .then((value) {
-                                    successToast(message: 'check your mail');
-                                  }).catchError((onError) {
-                                    print(onError.toString());
-                                  });
-                                },
-                                child: Text('SEND'))
-                          ],
-                        ),
-                      ),
-                    ),
                   cubit.screens[cubit.currentIndex],
                 ],
               ),

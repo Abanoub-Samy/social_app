@@ -7,8 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 
 class FeedsScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    AppCubit.get(context).getPosts();
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -47,7 +49,7 @@ class FeedsScreen extends StatelessWidget {
                       shrinkWrap: true,
                       physics: BouncingScrollPhysics(),
                       itemBuilder: (context, index) =>
-                          buildPostItem(AppCubit.get(context).postModel[index],context),
+                          buildPostItem(AppCubit.get(context).postModel[index],context,index),
                       separatorBuilder: (context, index) =>
                           SizedBox(
                             height: 10,

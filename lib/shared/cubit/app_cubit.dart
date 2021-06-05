@@ -214,27 +214,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  // File postImages;
-  // void uploadPostImages() {
-  //   firebase_storage.FirebaseStorage.instance
-  //       .ref()
-  //       .child('posts/${Uri.file(coverImage.path).pathSegments.last}')
-  //       .putFile(coverImage)
-  //       .then((value) {
-  //     value.ref.getDownloadURL().then((value) {
-  //       updateUser(
-  //         name: userModel!.name!,
-  //         phone: userModel!.phone!,
-  //         bio: userModel!.bio!,
-  //         profileCover: value,
-  //         profileImage: userModel!.profileImage!,
-  //       );
-  //       getUser();
-  //     }).catchError((onError) {});
-  //   }).catchError((onError) {
-  //     print(onError.toString());
-  //   });
-  // }
 
   void uploadImagePost({
     String? text,
@@ -277,15 +256,52 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<PostModel> postModel= [] ;
+  List<String> postId = [] ;
+  int? likes  ;
+  int? comments  ;
+
   void getPosts(){
     emit(GetPostsLoadingState());
     fireStore.collection('posts').get().then((value){
+      postModel = [];
       value.docs.forEach((element) {
         postModel.add(PostModel.fromJson(element.data()));
+        postId.add(element.id);
+
+        element.reference.collection('likes').get().then((value){
+          likes= value.docs.length;
+        }).catchError((onError){});
+
+        element.reference.collection('comments').get().then((value){
+          comments = value.docs.length;
+        }).catchError((onError){});
+
       });
       emit(GetPostsSuccessState());
     }).catchError((onError){
       emit(GetPostsErrorState(onError.toString()));
+    });
+  }
+  
+  void postLike(String postId){
+    fireStore.collection('posts').doc(postId).collection('likes').doc(userModel!.uId).set({
+    }).then((value){
+      emit(PostLikeSuccessState());
+      getPosts();
+    }).catchError((onError){
+      emit(PostLikeErrorState(onError.toString()));
+    });
+  }
+
+  void postComment (String postId,String text){
+    emit(PostCommentLoadingState());
+    fireStore.collection('posts').doc(postId).collection('comments').doc(userModel!.uId).set({
+      'text' :text,
+    }).then((value){
+      getUser();
+      emit(PostCommentSuccessState());
+    }).catchError((onError){
+      emit(PostCommentErrorState(onError.toString()));
     });
   }
 }

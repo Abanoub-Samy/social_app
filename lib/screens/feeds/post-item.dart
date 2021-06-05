@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:social_app/models/post_model.dart';
+import 'package:social_app/shared/cubit/app_cubit.dart';
 
-Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
+Widget buildPostItem(PostModel postModel, BuildContext context , int index) => Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       elevation: 4,
       margin: EdgeInsets.symmetric(
@@ -140,7 +141,8 @@ Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: Row(
@@ -154,7 +156,7 @@ Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
                             width: 5,
                           ),
                           Text(
-                            '0',
+                            '${AppCubit.get(context).likes}',
                             style: Theme.of(context).textTheme.caption,
                           ),
                         ],
@@ -179,7 +181,7 @@ Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
                             width: 5,
                           ),
                           Text(
-                            '0 comment',
+                            '${AppCubit.get(context).comments} comment',
                             style: Theme.of(context).textTheme.caption,
                           ),
                         ],
@@ -206,7 +208,7 @@ Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
                         CircleAvatar(
                           radius: 18,
                           backgroundImage:
-                              NetworkImage(postModel.profileImage.toString()),
+                              NetworkImage(AppCubit.get(context).userModel!.profileImage.toString()),
                         ),
                         SizedBox(
                           width: 15,
@@ -219,11 +221,15 @@ Widget buildPostItem(PostModel postModel, BuildContext context) => Card(
                         ),
                       ],
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      AppCubit.get(context).postComment(AppCubit.get(context).postId[index], 'good');
+                    },
                   ),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    AppCubit.get(context).postLike(AppCubit.get(context).postId[index]);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: Row(
